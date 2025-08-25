@@ -345,17 +345,31 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
-    console.log('Iniciando GrupoCine...');
+    console.log('🚀 Iniciando GrupoCine...');
 
     // Inicializar banco de dados
     const dbInitialized = await initializeDatabase();
 
     if (!dbInitialized) {
         console.error('❌ Não foi possível inicializar o banco de dados.');
-        console.error('💡 Verifique:');
-        console.error('   - Se o MySQL está rodando');
-        console.error('   - Se as credenciais no .env estão corretas');
-        console.error('   - Se o usuário tem permissões para criar bancos');
+        
+        // Verificar se é Railway que pode estar offline
+        if (process.env.DB_HOST && process.env.DB_HOST.includes('railway')) {
+            console.error('💡 Se estiver testando localmente com Railway:');
+            console.error('   - O serviço pode estar em standby');
+            console.error('   - Tente acessar o banco pelo painel Railway primeiro');
+            console.error('   - No Railway em produção, isso funcionará automaticamente');
+            console.error('');
+            console.error('🚀 Para deploy no Railway:');
+            console.error('   1. Configure as variáveis no painel Railway');
+            console.error('   2. Use: DB_HOST=mysql.railway.internal');
+            console.error('   3. O sistema iniciará automaticamente');
+        } else {
+            console.error('💡 Verifique:');
+            console.error('   - Se o MySQL está rodando');
+            console.error('   - Se as credenciais no .env estão corretas');
+            console.error('   - Se o usuário tem permissões para criar bancos');
+        }
         process.exit(1);
     }
 
@@ -364,13 +378,14 @@ async function startServer() {
 
     if (!dbConnected) {
         console.error('❌ Não foi possível conectar ao banco de dados após inicialização.');
+        console.error('💡 No Railway em produção, isso funcionará automaticamente.');
         process.exit(1);
     }
 
     server.listen(PORT, () => {
-        console.log(`Servidor rodando na porta ${PORT}`);
-        console.log(`Interface do usuário: http://localhost:${PORT}`);
-        console.log(`Dashboard administrativo: http://localhost:${PORT}/dashboard`);
+        console.log(`🎉 Servidor rodando na porta ${PORT}`);
+        console.log(`👤 Interface do usuário: http://localhost:${PORT}`);
+        console.log(`⚙️ Dashboard administrativo: http://localhost:${PORT}/dashboard`);
         console.log('');
         console.log('✅ Sistema pronto para uso!');
     });

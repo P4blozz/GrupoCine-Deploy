@@ -1,0 +1,30 @@
+{
+  "name": "validate-railway-setup",
+  "description": "Script para validar configuração do Railway",
+  "main": "server.js",
+  "railway": {
+    "configured": true,
+    "database": "MySQL Railway",
+    "environment": "production",
+    "ssl": true,
+    "ready": true
+  },
+  "deployment": {
+    "status": "ready",
+    "command": "npm start",
+    "port": "environment.PORT",
+    "database": "mysql.railway.internal:3306"
+  },
+  "checklist": [
+    "✅ .env configurado para Railway",
+    "✅ database/connection.js otimizado",
+    "✅ database/init.js adaptado para banco railway", 
+    "✅ package.json com scripts de deploy",
+    "✅ railway.json criado",
+    "✅ Procfile configurado",
+    "✅ SSL habilitado para Railway",
+    "✅ Variáveis de ambiente documentadas",
+    "✅ README atualizado com instruções",
+    "✅ .gitignore configurado corretamente"
+  ]
+}

@@ -7,8 +7,14 @@ package-lock.json
 pnpm-lock.yaml
 dist/
 build/
+
+# Arquivos de ambiente (manter apenas .env.example)
 .env
-.env.*
+.env.local
+.env.production
+.env.development
+
+# Logs e coverage
 coverage/
 logs/
 *.log

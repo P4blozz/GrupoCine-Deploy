@@ -8,30 +8,29 @@ async function initializeDatabase() {
     try {
         console.log('🔧 Inicializando banco de dados...');
         
-        // Conectar ao MySQL sem especificar banco
+        // Conectar ao MySQL Railway com configuração otimizada
+        const isRailwayHost = process.env.DB_HOST && (process.env.DB_HOST.includes('railway') || process.env.DB_HOST.includes('proxy.rlwy'));
+        
         connection = await mysql.createConnection({
-            host: process.env.DB_HOST || 'localhost',
-            port: process.env.DB_PORT || 3306,
-            user: process.env.DB_USER || 'root',
-            password: process.env.DB_PASSWORD || '',
-            multipleStatements: true
+            host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT) || 3306,
+            user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
+            password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
+            database: process.env.DB_NAME || process.env.MYSQL_DATABASE || process.env.MYSQLDATABASE || 'railway',
+            multipleStatements: true,
+            ssl: isRailwayHost ? { rejectUnauthorized: false } : false,
+            connectTimeout: 60000
         });
         
-        console.log('✅ Conectado ao MySQL server');
-        
-        // Criar banco de dados se não existir
-        await connection.query('CREATE DATABASE IF NOT EXISTS cinema_seats');
-        console.log('✅ Banco de dados "cinema_seats" verificado/criado');
-        
-        // Usar o banco de dados
-        await connection.query('USE cinema_seats');
+        console.log('✅ Conectado ao MySQL server (Railway)');
         
         // Verificar se as tabelas já existem
+        const dbName = process.env.DB_NAME || process.env.MYSQL_DATABASE || process.env.MYSQLDATABASE || 'railway';
         const [tables] = await connection.query(`
             SELECT TABLE_NAME 
             FROM INFORMATION_SCHEMA.TABLES 
-            WHERE TABLE_SCHEMA = 'cinema_seats'
-        `);
+            WHERE TABLE_SCHEMA = ?
+        `, [dbName]);
         
         const existingTables = tables.map(row => row.TABLE_NAME);
         const requiredTables = ['seats', 'seat_codes', 'seat_sessions'];
